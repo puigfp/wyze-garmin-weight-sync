@@ -25,9 +25,9 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: .sync-state
-          key: wyze-garmin-sync-state-v2-${{ github.run_id }}
+          key: wyze-garmin-sync-state-v3-${{ github.run_id }}
           restore-keys: |
-            wyze-garmin-sync-state-v2-
+            wyze-garmin-sync-state-v3-
 
       - name: Install toolchain with mise
         uses: jdx/mise-action@v2
