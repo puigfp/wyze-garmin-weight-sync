@@ -17,6 +17,16 @@ jobs:
       - name: Install tools declared by mise
         run: mise install
 
+      - name: Cache uv dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/uv
+            .venv
+          key: ${{ runner.os }}-uv-${{ hashFiles('uv.lock', '.mise.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-uv-
+
       - name: Sync Python dependencies
         run: uv sync --frozen --all-groups
 
