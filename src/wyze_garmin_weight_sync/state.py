@@ -56,4 +56,8 @@ def is_new_measurement(state: SyncState | None, measurement: WyzeMeasurement) ->
     if state is None:
         return True
 
+    if measurement.measured_at_epoch_ms > state["last_measurement_epoch_ms"]:
+        return True
+    if measurement.measured_at_epoch_ms < state["last_measurement_epoch_ms"]:
+        return False
     return state["last_measurement_id"] != measurement.measurement_id

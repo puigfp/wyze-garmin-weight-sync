@@ -2,11 +2,12 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 from getpass import getpass
 from typing import Final, cast
 
 from wyze_sdk import Client
+from wyze_sdk.api.devices.scales import ScalesClient
 from wyze_sdk.errors import WyzeApiError
 
 from .models import (
@@ -117,20 +118,61 @@ def authenticate_wyze(
     raise ValueError(msg)
 
 
-def fetch_latest_measurement(
-    client: Client, *, device_mac: str | None = None
-) -> WyzeMeasurement:
+def fetch_measurements(
+    client: Client,
+    *,
+    device_mac: str | None = None,
+    start_time: datetime | None = None,
+) -> list[WyzeMeasurement]:
     scale_mac = device_mac or _select_scale_mac(client.devices_list())
     scale = client.scales.info(device_mac=scale_mac)
     if scale is None:
         raise RuntimeError(f"Wyze scale {scale_mac} was not found")
 
-    latest_records = getattr(scale, "latest_records", None)
-    if not latest_records:
+    records = _fetch_records(client.scales, scale, start_time=start_time)
+    if not records:
         raise RuntimeError(f"Wyze scale {scale_mac} has no recent measurements")
 
-    record = latest_records[0]
-    return _measurement_from_record(record)
+    measurements = [_measurement_from_record(record) for record in records]
+    measurements.sort(
+        key=lambda measurement: (
+            measurement.measured_at_epoch_ms,
+            measurement.measurement_id,
+        )
+    )
+    return _dedupe_measurements(measurements)
+
+
+def _fetch_records(
+    scales_client: ScalesClient,
+    scale: object,
+    *,
+    start_time: datetime | None,
+) -> list[object]:
+    latest_records = list(getattr(scale, "latest_records", None) or [])
+    product_model = _string_attr(scale, "product_model")
+    if start_time is None or product_model is None:
+        return latest_records
+
+    records = scales_client.get_records(
+        device_model=product_model,
+        start_time=start_time.astimezone(UTC),
+        end_time=datetime.now(UTC),
+    )
+    return list(records)
+
+
+def _dedupe_measurements(
+    measurements: Sequence[WyzeMeasurement],
+) -> list[WyzeMeasurement]:
+    unique_measurements: list[WyzeMeasurement] = []
+    seen_measurement_ids: set[str] = set()
+    for measurement in measurements:
+        if measurement.measurement_id in seen_measurement_ids:
+            continue
+        seen_measurement_ids.add(measurement.measurement_id)
+        unique_measurements.append(measurement)
+    return unique_measurements
 
 
 def _is_session_valid(client: Client) -> bool:

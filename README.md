@@ -1,14 +1,14 @@
 # Wyze Garmin Weight Sync
 
-This repository contains a small Python CLI that syncs the latest measurement
+This repository contains a small Python CLI that syncs missing measurements
 from a Wyze scale into Garmin Connect. It is designed to run daily from a
 GitHub Actions cron job, while avoiding real Wyze and Garmin usernames and
 passwords in GitHub secrets during normal operation.
 
 The sync flow takes inspiration from
 [`svanhoutte/wyze_garmin_sync`](https://github.com/svanhoutte/wyze_garmin_sync):
-it reads the latest Wyze scale record, converts it into a Garmin FIT weight
-file, and uploads that file to Garmin Connect.
+it reads recent Wyze scale records, converts any missing ones into Garmin FIT
+weight files, and uploads them to Garmin Connect.
 
 ## Tooling
 
@@ -39,8 +39,7 @@ uv run mypy src
 For normal scheduled GitHub Actions runs, the workflow is built around tokens:
 
 - Garmin uses `GARMIN_TOKEN`, which is a serialized `garth` token bundle.
-- Wyze uses `WYZE_ACCESS_TOKEN`, `WYZE_REFRESH_TOKEN`, `WYZE_KEY_ID`, and
-  `WYZE_API_KEY`.
+- Wyze CI only needs `WYZE_REFRESH_TOKEN`.
 
 That means GitHub Actions does not need your real Garmin or Wyze password for
 the day-to-day sync.
@@ -85,7 +84,9 @@ The command prints JSON that contains:
 - `WYZE_KEY_ID`
 - `WYZE_API_KEY`
 
-Save those values as GitHub Actions secrets with the same names.
+For GitHub Actions, the only Wyze secret you need to save is
+`WYZE_REFRESH_TOKEN`. Keep the other printed values available for local use or
+future troubleshooting if needed.
 
 ## Running Locally
 
@@ -108,10 +109,7 @@ Optional environment variables:
 The workflow expects these secrets:
 
 - `GARMIN_TOKEN`
-- `WYZE_ACCESS_TOKEN`
 - `WYZE_REFRESH_TOKEN`
-- `WYZE_KEY_ID`
-- `WYZE_API_KEY`
 
 Optional repository variable:
 

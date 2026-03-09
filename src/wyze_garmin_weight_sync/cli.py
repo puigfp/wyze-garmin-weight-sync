@@ -20,7 +20,7 @@ from .wyze import (
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="wyze-garmin-weight-sync",
-        description="Sync the latest Wyze scale measurement to Garmin Connect.",
+        description="Sync missing Wyze scale measurements to Garmin Connect.",
     )
     parser.add_argument(
         "--log-level",
@@ -32,7 +32,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     sync_parser = subparsers.add_parser(
         "sync",
-        help="Upload the latest Wyze scale measurement to Garmin Connect.",
+        help="Upload missing Wyze scale measurements to Garmin Connect.",
     )
     sync_parser.add_argument(
         "--state-dir",
