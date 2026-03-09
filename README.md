@@ -133,3 +133,22 @@ mise run lint
 mise run typecheck
 mise run check
 ```
+
+## Disclaimer
+
+This repository was one-shotted by an AI agent started with the following prompt:
+
+```
+I want to write a Python script that will be runs daily through a Github Actions CRON job and syncs the data measured by my Wyze scale to Garmin connect
+
+if possible, I do not want the Github Actions secrets to include my real Garmin Connect and Wyze credentials (but they may include real access tokens for these services)
+
+make sure the repository uses the following tools:
+- mise to manage tools
+- uv for Python dependencies
+- ruff for codestyle + standard linting rules
+- mypy for type checking (make sure the code uses the most specific types possible, eg TypedDict instead of dict)
+
+take inspiration from the Python code of this repository for the logic:
+https://github.com/svanhoutte/wyze_garmin_sync
+```
