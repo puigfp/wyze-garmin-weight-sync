@@ -3,7 +3,7 @@ name: Sync Wyze Weight To Garmin
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 13 * * *"
+    - cron: "0 */6 * * *"
 
 jobs:
   sync:
@@ -48,7 +48,7 @@ jobs:
       - name: Sync Python dependencies
         run: uv sync --frozen --all-groups
 
-      - name: Run daily sync
+      - name: Run sync
         run: uv run wyze-garmin-weight-sync sync
 
       - name: Save sync state
