@@ -1,0 +1,49 @@
+name: Sync Wyze Weight To Garmin
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 13 * * *"
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      GARMIN_TOKEN: ${{ secrets.GARMIN_TOKEN }}
+      WYZE_ACCESS_TOKEN: ${{ secrets.WYZE_ACCESS_TOKEN }}
+      WYZE_REFRESH_TOKEN: ${{ secrets.WYZE_REFRESH_TOKEN }}
+      WYZE_KEY_ID: ${{ secrets.WYZE_KEY_ID }}
+      WYZE_API_KEY: ${{ secrets.WYZE_API_KEY }}
+      WYZE_SCALE_MAC: ${{ vars.WYZE_SCALE_MAC }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Restore sync state
+        uses: actions/cache/restore@v4
+        with:
+          path: .sync-state
+          key: wyze-garmin-sync-state-${{ github.run_id }}
+          restore-keys: |
+            wyze-garmin-sync-state-
+
+      - name: Install toolchain with mise
+        uses: jdx/mise-action@v2
+
+      - name: Install tools declared by mise
+        run: mise install
+
+      - name: Sync Python dependencies
+        run: uv sync --frozen --all-groups
+
+      - name: Run daily sync
+        run: uv run wyze-garmin-weight-sync sync
+
+      - name: Save sync state
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .sync-state
+          key: wyze-garmin-sync-state-${{ github.run_id }}

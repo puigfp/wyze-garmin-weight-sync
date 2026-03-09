@@ -1,0 +1,44 @@
+[project]
+name = "wyze-garmin-weight-sync"
+version = "0.1.0"
+description = "Sync the latest Wyze scale measurement to Garmin Connect."
+readme = "README.md"
+authors = [
+    { name = "Francisco-Pierre Puig", email = "puig.franciscopierre@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "garth>=0.6.3",
+    "wyze-sdk>=2.2.0",
+]
+
+[project.scripts]
+wyze-garmin-weight-sync = "wyze_garmin_weight_sync:main"
+
+[build-system]
+requires = ["uv_build>=0.9.18,<0.10.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "mypy>=1.19.1",
+    "ruff>=0.15.5",
+]
+
+[tool.ruff]
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["B", "E", "F", "I", "UP"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unused_configs = true
+ignore_missing_imports = true
+pretty = true
+show_error_codes = true
