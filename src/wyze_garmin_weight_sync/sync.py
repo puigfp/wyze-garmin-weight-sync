@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-import os
 import tempfile
 from datetime import UTC, datetime
 from pathlib import Path
@@ -77,12 +76,6 @@ def run_sync(settings: SyncSettings) -> int:
             len(new_measurements),
             new_measurements[-1].measured_at.isoformat(),
         )
-    _warn_about_rotated_wyze_tokens(
-        configured_access_token=settings.wyze_access_token,
-        configured_refresh_token=settings.wyze_refresh_token,
-        refreshed_access_token=wyze_session.access_token,
-        refreshed_refresh_token=wyze_session.refresh_token,
-    )
     return 0
 
 
@@ -105,31 +98,6 @@ class _temporary_fit_file:
         if self._path is None:
             return
         self._path.unlink(missing_ok=True)
-
-
-def _warn_about_rotated_wyze_tokens(
-    *,
-    configured_access_token: str | None,
-    configured_refresh_token: str | None,
-    refreshed_access_token: str | None,
-    refreshed_refresh_token: str | None,
-) -> None:
-    if not os.getenv("GITHUB_ACTIONS"):
-        return
-
-    token_changed = False
-    if refreshed_access_token and refreshed_access_token != configured_access_token:
-        token_changed = True
-    if refreshed_refresh_token and refreshed_refresh_token != configured_refresh_token:
-        token_changed = True
-
-    if token_changed:
-        print(
-            "::warning::Wyze tokens changed during this run. "
-            "Update the GitHub Actions secrets if the existing token set stops working."
-        )
-
-
 def _state_measurement_time(settings_state: SyncState | None) -> datetime | None:
     if settings_state is None:
         return None
