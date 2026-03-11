@@ -12,11 +12,7 @@ jobs:
       contents: read
     env:
       GARMIN_TOKEN: ${{ secrets.GARMIN_TOKEN }}
-      WYZE_ACCESS_TOKEN: ${{ secrets.WYZE_ACCESS_TOKEN }}
       WYZE_REFRESH_TOKEN: ${{ secrets.WYZE_REFRESH_TOKEN }}
-      WYZE_KEY_ID: ${{ secrets.WYZE_KEY_ID }}
-      WYZE_API_KEY: ${{ secrets.WYZE_API_KEY }}
-      WYZE_SCALE_MAC: ${{ vars.WYZE_SCALE_MAC }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
