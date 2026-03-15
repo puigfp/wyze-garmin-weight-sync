@@ -52,4 +52,4 @@ jobs:
         uses: actions/cache/save@v5
         with:
           path: .sync-state
-          key: wyze-garmin-sync-state-v2-${{ github.run_id }}
+          key: wyze-garmin-sync-state-v3-${{ github.run_id }}
