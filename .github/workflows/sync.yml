@@ -26,7 +26,7 @@ jobs:
             wyze-garmin-sync-state-v3-
 
       - name: Install toolchain with mise
-        uses: jdx/mise-action@v3
+        uses: jdx/mise-action@v4
 
       - name: Install tools declared by mise
         run: mise install
